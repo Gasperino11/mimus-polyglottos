@@ -210,6 +210,6 @@ async def _github(ctx):
     
     caller = ctx.message.author.id
     caller_text_channel = ctx.message.channel
-    await caller_text_channel.send("Want to contribute? Check out the [Github repo|]!")   
+    await caller_text_channel.send("Want to contribute? Check out the [Github repo](https://github.com/Gasperino11/mimus-polyglottos)!")   
 
 bot.run(DISCORD_TOKEN)
