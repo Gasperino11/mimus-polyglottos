@@ -137,7 +137,7 @@ async def _generate(ctx, request_voice, request_text):
         await debug_channel.send(debug_formatter(debug_list, "generate"))
 
 ### LIST VOICES ###
-@bot.command(name='list_voices', aliases=['listvoices','all_voices','allvoices', 'what_voices', 'whatvoices'], description='Lists all of the available voices to generate audio with')
+@bot.command(name='list_voices', aliases=['listvoices','all_voices','allvoices', 'what_voices', 'whatvoices', 'voice_list', 'voicelist', 'voices_list', 'voiceslist'], description='Lists all of the available voices to generate audio with')
 async def _list_voices(ctx):
 
     caller = ctx.message.author.id
@@ -210,6 +210,6 @@ async def _github(ctx):
     
     caller = ctx.message.author.id
     caller_text_channel = ctx.message.channel
-    await caller_text_channel.send("Want to contribute? Check out the [Github repo|]!")   
+    await caller_text_channel.send("Want to contribute? Check out the [Github repo|https://github.com/Gasperino11/mimus-polyglottos]!")   
 
 bot.run(DISCORD_TOKEN)
