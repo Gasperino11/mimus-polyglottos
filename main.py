@@ -218,6 +218,6 @@ async def _usage(ctx):
     caller = ctx.message.author.id
     caller_text_channel = ctx.message.channel
     usage_info = get_usage()
-    await caller_text_channel.send(f"This account has a {usage_info['limit']:,} character limit and has used {usage_info['used':,]} characters thus far and has {usage_info['available']:,} characters available until next month.")  
+    await caller_text_channel.send(f"This account has a {usage_info['limit']:,} character limit and has used {usage_info['used']:,} characters thus far and has {usage_info['available']:,} characters available until next month.")  
 
 bot.run(DISCORD_TOKEN)

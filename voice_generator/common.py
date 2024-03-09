@@ -59,6 +59,11 @@ voice_mappings = {
     "mario" : {
         "eleven-labs-name"  : "discord-bot-7",
         "full-name"         : "Super Mario"
+    },
+
+    "dunkey" : {
+        "eleven-labs-name"  : "discord-bot-8",
+        "full-name"         : "Video Game Dunkey"
     }
 }
 
