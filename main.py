@@ -154,7 +154,7 @@ async def _list_voices(ctx):
     if DEBUG_MODE:
         await debug_channel.send(debug_formatter(debug_list, "list_voices"))
 
-### DEBUG MODE ###
+### DEBUG MODE ### 
 @bot.command(name='debug', aliases=['debug_mode','debugmode','uwu_mode', 'uwumode'], description='Enables debug mode which displays additional information on command execution in the assigned debug channel')
 async def _debug_mode(ctx):
     global DEBUG_MODE
@@ -210,6 +210,14 @@ async def _github(ctx):
     
     caller = ctx.message.author.id
     caller_text_channel = ctx.message.channel
-    await caller_text_channel.send("Want to contribute? Check out the [Github repo](https://github.com/Gasperino11/mimus-polyglottos)!")   
+    await caller_text_channel.send("Want to contribute? Check out the [Github repo](https://github.com/Gasperino11/mimus-polyglottos)!")
+
+@bot.command(name='usage', aliases=['used', 'characters_used', 'charactersused', 'characters'])
+async def _usage(ctx):
+
+    caller = ctx.message.author.id
+    caller_text_channel = ctx.message.channel
+    usage_info = get_usage()
+    await caller_text_channel.send(f"This account has a {usage_info['limit']:,} character limit and has used {usage_info['used':,]} characters thus far and has {usage_info['available']:,} characters available until next month.")  
 
 bot.run(DISCORD_TOKEN)

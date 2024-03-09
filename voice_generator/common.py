@@ -1,3 +1,4 @@
+import json
 import requests
 import os
 from datetime import *
@@ -11,7 +12,7 @@ os.makedirs("temp", exist_ok=True)
 elevenlabs_base_url     = "https://api.elevenlabs.io/v1/text-to-speech/"
 elevenlabs_client       = ElevenLabs(api_key=os.getenv("ELEVENLABS_TOKEN"))
 elevenlabs_voices       = [x for x in elevenlabs_client.voices.get_all().voices if x.name.startswith('discord')]
-default_voice_settings  = VoiceSettings(stability=0.5, similarity_boost=0.5, style=0.2, use_speaker_boost=True)
+default_voice_settings  = {"style" : 0.2, "stability" : 0.5, "similarity_boost" : 0.5, "use_speaker_boost" : True}
 querystring             = {"output_format":"mp3_44100_128"}
 
 # create initialization string to print out when bot starts up
@@ -54,6 +55,11 @@ voice_mappings = {
         "eleven-labs-name"  : "discord-bot-6",
         "full-name"         : "Nakey Jakey"
     },
+
+    "mario" : {
+        "eleven-labs-name"  : "discord-bot-7",
+        "full-name"         : "Super Mario"
+    }
 }
 
 # fetch the eleven labs ID and description
@@ -79,12 +85,7 @@ def generate_and_save(input_text: str, request_voice: str, requester: str) -> di
     payload = {
         "text" : input_text,
         "model_id" : "eleven_multilingual_v2",
-        "voice_settings" : {
-            "style" : 0.2,
-            "stability" : 0.5,
-            "similarity_boost" : 0.5,
-            "use_speaker_boost" : True
-        }
+        "voice_settings" : default_voice_settings
     }
     
     headers = {
@@ -104,3 +105,17 @@ def generate_and_save(input_text: str, request_voice: str, requester: str) -> di
         response_dict['error-msg'] = f"API Response status was {response_dict['status']} with description {response.text}"
 
     return response_dict
+
+def get_usage():
+    """Get Eleven Labs API usage thus far"""
+
+    headers = {"xi-api-key": os.getenv("ELEVENLABS_TOKEN")}
+    response = requests.request("GET", "https://api.elevenlabs.io/v1/user/subscription", headers=headers)
+    response_dict = json.loads(response.text)
+    display_dict = {
+        "limit"     : response_dict['character_limit'],
+        "used"      : response_dict['character_count'],
+        "available" : (response_dict['character_limit'] - response_dict['character_count'])
+    }
+
+    return display_dict
