@@ -35,10 +35,10 @@ async def on_command_error(ctx, error):
     debug_list = [f"Caller was {caller} from {caller_text_channel}"]
 
     if isinstance(error, CommandNotFound):
-        await caller_text_channel.send(uwu("Looks like the command you sent wasn't a valid one! Try using !help to see a list of commands."))
+        await caller_text_channel.send(uwu(f"<@{caller}> it looks like the command you sent wasn't a valid one! Try using !help to see a list of commands."))
 
     if isinstance(error, ExpectedClosingQuoteError):
-        await caller_text_channel.send(uwu("<@{caller} it looks like you forgot a closing double quotes! Be sure to wrap all your text in double quotes. :grin:"))
+        await caller_text_channel.send(uwu(f"<@{caller}> it looks like you forgot a closing double quotes! Be sure to wrap all your text in double quotes. :grin:"))
 
 #################################################
 #####           START OF COMMANDS           #####
@@ -184,19 +184,6 @@ async def _debug_mode(ctx):
         DEBUG_MODE = True
     
     return None
-
-## HELP ME ###
-@bot.command(name='help_me', description='Provides a list of bot commands users can use')
-async def _help_me(ctx):
-    
-    caller = ctx.message.author.id
-    caller_text_channel = ctx.message.channel
-    debug_list = [f"Caller was {caller} from {caller_text_channel}"]
-
-    await caller_text_channel.send(print_help_str())
-
-    if DEBUG_MODE:
-        await debug_channel.send(debug_formatter(debug_list, "help"))
 
 @bot.command(name='roadmap', aliases=['road_map', 'upcoming', 'whats_next', 'patchnotes', 'patch_notes', 'notes'], description='Provides a roadmap of upcoming features and voices')
 async def _roadmap(ctx):
