@@ -7,6 +7,7 @@ from utils.common import *
 from voice_generator.common import *
 from discord.ext import commands
 from discord.utils import get
+from discord.ext.commands.errors import CommandNotFound, ExpectedClosingQuoteError
 
 DISCORD_TOKEN = os.getenv('DISCORD_TOKEN')
 DEBUG_CHANNEL_ID = 1212207389793714266 # MUST BE AN INT
@@ -15,12 +16,29 @@ DEBUG_MODE = False
 # set up bot with prefix and permissions 
 bot = commands.Bot(command_prefix="!", intents=discord.Intents.all())
 
+#################################################
+#####           ON EVENT BEHAVIOR           #####
+#################################################
+
 @bot.event
 async def on_ready():
     global debug_channel
     debug_channel = bot.get_channel(DEBUG_CHANNEL_ID)
     await debug_channel.send("AI Voice Bot is ready for action! This is my debug channel. Use !debug to turn on debug mode.")
     await debug_channel.send(init_str)
+
+@bot.event
+async def on_command_error(ctx, error):
+    
+    caller = ctx.message.author.id
+    caller_text_channel = ctx.message.channel
+    debug_list = [f"Caller was {caller} from {caller_text_channel}"]
+
+    if isinstance(error, CommandNotFound):
+        await caller_text_channel.send(uwu("Looks like the command you sent wasn't a valid one! Try using !help to see a list of commands."))
+
+    if isinstance(error, ExpectedClosingQuoteError):
+        await caller_text_channel.send(uwu("<@{caller} it looks like you forgot a closing double quotes! Be sure to wrap all your text in double quotes. :grin:"))
 
 #################################################
 #####           START OF COMMANDS           #####
@@ -85,6 +103,7 @@ async def _generate(ctx, request_voice, request_text):
     caller = ctx.message.author.id
     caller_text_channel = ctx.message.channel
     caller_voice_channel = ctx.message.author.voice.channel
+    request_voice = request_voice.lower()
     debug_list = [f"Caller was {caller} from {caller_text_channel}", f"Trying to generate text with {request_voice}"]
     debug_list.append(f"Request text: {request_text}")
 
@@ -99,11 +118,9 @@ async def _generate(ctx, request_voice, request_text):
         debug_list.append(output_dict['debug-string'])
     except KeyError:
         await caller_text_channel.send(uwu(f"Sorry! I couldn't generate your audio for you because {request_voice} is not a voice I know yet; use !list_voices to see which ones I know!"))
-        return 
     except Exception as e:
         await caller_text_channel.send(uwu(f"Sorry! I couldn't generate the audio for you but I'm not sure why. Use the !debug command to turn on debug mode and get more details."))
         debug_list.append(f"Saving audio failed because of: {repr(e)}")
-        return 
 
     #Step 3a: try and fetch the bots current connection status
     #I think the get().is_connect() should tell us if the bot is connected to ANY voice channel in the given server
@@ -212,12 +229,18 @@ async def _github(ctx):
     caller_text_channel = ctx.message.channel
     await caller_text_channel.send("Want to contribute? Check out the [Github repo](https://github.com/Gasperino11/mimus-polyglottos)!")
 
+    if DEBUG_MODE:
+        await debug_channel.send(debug_formatter([f"Caller was {caller} from {caller_text_channel}"], "github"))
+
 @bot.command(name='usage', aliases=['used', 'characters_used', 'charactersused', 'characters'])
 async def _usage(ctx):
 
     caller = ctx.message.author.id
     caller_text_channel = ctx.message.channel
     usage_info = get_usage()
-    await caller_text_channel.send(f"This account has a {usage_info['limit']:,} character limit and has used {usage_info['used']:,} characters thus far and has {usage_info['available']:,} characters available until next month.")  
+    await caller_text_channel.send(f"This account has a {usage_info['limit']:,} character limit and has used {usage_info['used']:,} characters thus far and has {usage_info['available']:,} characters available until next month.")
+
+    if DEBUG_MODE:
+        await debug_channel.send(debug_formatter([f"Caller was {caller} from {caller_text_channel}"], "usage"))
 
 bot.run(DISCORD_TOKEN)
