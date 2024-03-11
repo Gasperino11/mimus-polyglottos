@@ -76,7 +76,7 @@ for bot_voice in voice_mappings.keys():
             voice_mappings[bot_voice]['eleven-labs-id'] = el_voice.voice_id
             voice_mappings[bot_voice]['voice-settings'] = el_voice.settings
 
-def generate_and_save(input_text: str, request_voice: str, requester: str) -> dict:
+def generate_and_save(input_text: str, request_voice: str, requester: str, voice_settings: dict = default_voice_settings) -> dict:
 
     # common vars
     response_dict = {}
@@ -90,7 +90,7 @@ def generate_and_save(input_text: str, request_voice: str, requester: str) -> di
     payload = {
         "text" : input_text,
         "model_id" : "eleven_multilingual_v2",
-        "voice_settings" : default_voice_settings
+        "voice_settings" : voice_settings
     }
     
     headers = {

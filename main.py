@@ -3,6 +3,7 @@
 
 import os
 import discord
+import json 
 from utils.common import *
 from voice_generator.common import *
 from discord.ext import commands
@@ -36,9 +37,10 @@ async def on_command_error(ctx, error):
 
     if isinstance(error, CommandNotFound):
         await caller_text_channel.send(uwu(f"<@{caller}> it looks like the command you sent wasn't a valid one! Try using !help to see a list of commands."))
-
-    if isinstance(error, ExpectedClosingQuoteError):
+    elif isinstance(error, ExpectedClosingQuoteError):
         await caller_text_channel.send(uwu(f"<@{caller}> it looks like you forgot a closing double quotes! Be sure to wrap all your text in double quotes. :grin:"))
+    else:
+        await caller_text_channel.send(uwu(f"<@{caller}> I don't know what broke but here is the error message:\n ```{error}```"))
 
 #################################################
 #####           START OF COMMANDS           #####
@@ -98,7 +100,12 @@ async def _disconnect(ctx):
 
 ### GENERATE ###
 @bot.command(name='generate', aliases=['speak'], description='Generates audio of the specified text in the specified voice')
-async def _generate(ctx, request_voice, request_text):
+async def _generate(
+    ctx, 
+    request_voice: str = commands.parameter(default="spongebob", description="The voice to be used to generate audio"), 
+    request_text: str = commands.parameter(default="I think you forgot to include audio to generate a voice from, dummmy", description="Text to generate audio of"), 
+    voice_settings: str = commands.parameter(default=default_voice_settings, description="Settings to use when generating the audio")
+):
 
     caller = ctx.message.author.id
     caller_text_channel = ctx.message.channel
@@ -107,6 +114,9 @@ async def _generate(ctx, request_voice, request_text):
     debug_list = [f"Caller was {caller} from {caller_text_channel}", f"Trying to generate text with {request_voice}"]
     debug_list.append(f"Request text: {request_text}")
 
+    if not isinstance(voice_settings, dict):
+        voice_settings = json.loads(voice_settings)
+
     #Step 1: If the user is not in a voice channel, send them a message telling them so
     if caller_voice_channel is None:
         await caller_text_channel.send(uwu(f"<@{caller}> you're not in a voice channel silly! I can't generate audio for you if you're not in a voice channel."))
@@ -114,7 +124,7 @@ async def _generate(ctx, request_voice, request_text):
     #Step 2: Try and generate the audio file we are going to play
     #TODO: Program behaviors based off exception type
     try:
-        output_dict = generate_and_save(input_text = request_text, request_voice = request_voice, requester=caller)
+        output_dict = generate_and_save(input_text = request_text, request_voice = request_voice, requester=caller, voice_settings=voice_settings)
         debug_list.append(output_dict['debug-string'])
     except KeyError:
         await caller_text_channel.send(uwu(f"Sorry! I couldn't generate your audio for you because {request_voice} is not a voice I know yet; use !list_voices to see which ones I know!"))
