@@ -1,6 +1,7 @@
 import json
 import requests
 import os
+import random
 from datetime import *
 from elevenlabs.client import ElevenLabs
 from elevenlabs import Voice, VoiceSettings, generate, save
@@ -124,3 +125,23 @@ def get_usage():
     }
 
     return display_dict
+
+def random_voice_and_phrase(voice_mappings=voice_mappings):
+    "Returns a random text and a random voice to use"
+
+    phrases = [
+        "It looks like you forgot to include text to generate audio of, you silly goose!",
+        "PEE pee POO poo check! hahahahahahahah!",
+        "i'm gay, i'm gay, i'm gay, I AM GAY, i'm gay, i'm gay, i'm gay, i'm gay, I AM GAAAAAY!",
+        "Kiss-a my mouth, and fuck-a my wife",
+        "I did not hit her Mark... I did not"
+        "ladeedaaadeeepeeepeeepooopooowhalalalalalabingbang",
+        "aeiou aeiou aeiou aeiou aeiou aeiou aeiou aeiou aeiou",
+        "IT'S FUCKING RAW!",
+        "Hey guys its video game dunkey here and the plunging attack is the most reliable attack in the game"
+    ]
+
+    phrase = phrases[random.randint(0,len(phrases)-1)]
+    voice = list(voice_mappings.keys())[random.randint(0,len(voice_mappings.keys()-1))]
+
+    return {"request_text": phrase, "request_voice": voice}
