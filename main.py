@@ -124,9 +124,11 @@ async def _generate(
         debug_list.append(output_dict['debug-string'])
     except KeyError:
         await caller_text_channel.send(uwu(f"Sorry! I couldn't generate your audio for you because {request_voice} is not a voice I know yet; use !list_voices to see which ones I know!"))
+        return
     except Exception as e:
         await caller_text_channel.send(uwu(f"Sorry! I couldn't generate the audio for you but I'm not sure why. Use the !debug command to turn on debug mode and get more details."))
         debug_list.append(f"Saving audio failed because of: {repr(e)}")
+        return 
 
     #Step 3a: try and fetch the bots current connection status
     #I think the get().is_connect() should tell us if the bot is connected to ANY voice channel in the given server
@@ -169,7 +171,7 @@ async def _list_voices(ctx):
     
     print_str = "```\nA list of currently available voices:\n"
     for _voice in voice_mappings.keys():
-        print_str += f"  - {voice_mappings[_voice]['full-name']} ({_voice}) : {voice_mappings[_voice]['description']}\n"
+        print_str += f"  - {voice_mappings[_voice]['full-name']} ({_voice}) : {voice_mappings[_voice]['description']} (quality is {voice_mappings[_voice]['quality']})\n"
     print_str += "```"
 
     await caller_text_channel.send(print_str)

@@ -29,42 +29,74 @@ Bot initialized with the following:
 voice_mappings = {
     "spongebob" : {
         "eleven-labs-name"  : "discord-bot-1",
-        "full-name"         : "Spongebob Squarepants"
+        "full-name"         : "Spongebob Squarepants",
+        "quality"           : "7 / 10"
     },
 
     "patrick" : {
         "eleven-labs-name"  : "discord-bot-2",
-        "full-name"         : "Patrick Star"
+        "full-name"         : "Patrick Star",
+        "quality"           : "6 / 10"
     },
 
     "gordon" : {
         "eleven-labs-name"  : "discord-bot-3",
-        "full-name"         : "Gordon Ramsay"
+        "full-name"         : "Gordon Ramsay",
+        "quality"           : "8 / 10"
     },
 
     "drphil" : {
         "eleven-labs-name"  : "discord-bot-4",
-        "full-name"         : "Doctor Phil"
+        "full-name"         : "Doctor Phil",
+        "quality"           : "6 / 10",
     },
 
     "cody" : {
         "eleven-labs-name"  : "discord-bot-5",
-        "full-name"         : "Cody Ko"
+        "full-name"         : "Cody Ko",
+        "quality"           : "6 / 10"
     },
 
     "jakey" : {
         "eleven-labs-name"  : "discord-bot-6",
-        "full-name"         : "Nakey Jakey"
+        "full-name"         : "Nakey Jakey",
+        "quality"           : "6 / 10"
     },
 
     "mario" : {
         "eleven-labs-name"  : "discord-bot-7",
-        "full-name"         : "Super Mario"
+        "full-name"         : "Super Mario",
+        "quality"           : "3 / 10"
     },
 
     "dunkey" : {
         "eleven-labs-name"  : "discord-bot-8",
-        "full-name"         : "Video Game Dunkey"
+        "full-name"         : "Video Game Dunkey",
+        "quality"           : "5 / 10"
+    },
+
+    "grunt" : {
+        "eleven-labs-name"  : "discord-bot-z",
+        "full-name"         : "Michael Jackson",
+        "quality"           : "2 / 10"
+    },
+
+    "elite" : {
+        "eleven-labs-name"  : "discord-bot-9",
+        "full-name"         : "The Sangheili",
+        "quality"           : "1 / 10"
+    },
+
+    "gambino" : {
+        "eleven-labs-name"  : "discord-bot-10",
+        "full-name"         : "Donald Glover AKA Childish Gambino",
+        "quality"           : "5 / 10"
+    },
+
+    "rick"  : {
+        "eleven-labs-name"  : "discord-bot-11",
+        "full-name"         : "Rick Sanchez",
+        "quality"           : "5 / 10"
     }
 }
 
@@ -77,7 +109,7 @@ for bot_voice in voice_mappings.keys():
             voice_mappings[bot_voice]['eleven-labs-id'] = el_voice.voice_id
             voice_mappings[bot_voice]['voice-settings'] = el_voice.settings
 
-def generate_and_save(input_text: str, request_voice: str, requester: str, voice_settings: dict = default_voice_settings) -> dict:
+def generate_and_save(input_text: str, request_voice: str, requester: str) -> dict:
 
     # common vars
     response_dict = {}
@@ -91,7 +123,7 @@ def generate_and_save(input_text: str, request_voice: str, requester: str, voice
     payload = {
         "text" : input_text,
         "model_id" : "eleven_multilingual_v2",
-        "voice_settings" : voice_settings
+        "voice_settings" : default_voice_settings
     }
     
     headers = {
@@ -141,7 +173,7 @@ def random_voice_and_phrase(voice_mappings=voice_mappings):
         "Hey guys its video game dunkey here and the plunging attack is the most reliable attack in the game"
     ]
 
-    phrase = phrases[random.randint(0,len(phrases)-1)]
-    voice = list(voice_mappings.keys())[random.randint(0,len(voice_mappings.keys()-1))]
+    phrase = random.sample(phrases,1)[0]
+    voice = random.sample(list(voice_mappings.keys()),1)[0]
 
     return {"request_text": phrase, "request_voice": voice}
