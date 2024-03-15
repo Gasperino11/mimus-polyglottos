@@ -13,7 +13,7 @@ os.makedirs("temp", exist_ok=True)
 elevenlabs_base_url     = "https://api.elevenlabs.io/v1/text-to-speech/"
 elevenlabs_client       = ElevenLabs(api_key=os.getenv("ELEVENLABS_TOKEN"))
 elevenlabs_voices       = [x for x in elevenlabs_client.voices.get_all().voices if x.name.startswith('discord')]
-default_voice_settings  = {"style" : 0.2, "stability" : 0.5, "similarity_boost" : 0.5, "use_speaker_boost" : True}
+default_voice_settings  = {"style" : 0.2, "stability" : 0.6, "similarity_boost" : 0.6, "use_speaker_boost" : True}
 querystring             = {"output_format":"mp3_44100_128"}
 
 # create initialization string to print out when bot starts up
@@ -97,6 +97,12 @@ voice_mappings = {
         "eleven-labs-name"  : "discord-bot-11",
         "full-name"         : "Rick Sanchez",
         "quality"           : "5 / 10"
+    },
+
+    "morty" : {
+        "eleven-labs-name"  : "discord-bot-12",
+        "full-name"         : "Morty Smith",
+        "quality"           : "5 / 10"        
     }
 }
 
