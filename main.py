@@ -172,7 +172,7 @@ async def _generate(
         await debug_channel.send(debug_formatter(debug_list, "generate"))
 
 ### LIST VOICES ###
-@bot.command(name='list_voices', aliases=['listvoices','all_voices','allvoices', 'what_voices', 'whatvoices'], description='Lists all of the available voices to generate audio with')
+@bot.command(name='list_voices', aliases=['listvoices','all_voices','allvoices', 'what_voices', 'whatvoices', 'voice_list', 'voicelist', 'voices_list', 'voiceslist'], description='Lists all of the available voices to generate audio with')
 async def _list_voices(ctx):
 
     caller = ctx.message.author.id
@@ -220,10 +220,12 @@ async def _usage(ctx):
 
     caller = ctx.message.author.id
     caller_text_channel = ctx.message.channel
+
     usage_info = get_usage()
     await caller_text_channel.send(f"This account has a {usage_info['limit']:,} character limit and has used {usage_info['used']:,} characters thus far and has {usage_info['available']:,} characters available until next month.")
 
     if DEBUG_MODE:
         await debug_channel.send(debug_formatter([f"Caller was {caller} from {caller_text_channel}"], "usage"))
+
 
 bot.run(DISCORD_TOKEN)
