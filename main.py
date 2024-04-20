@@ -6,6 +6,7 @@ import discord
 import json 
 from utils.common import *
 from voice_generator.common import *
+from llm_responder.common import *
 from discord.ext import commands
 from discord.utils import get
 from discord.ext.commands.errors import CommandNotFound, ExpectedClosingQuoteError
@@ -99,7 +100,7 @@ async def _disconnect(ctx):
         await ctx.voice_client.disconnect()
 
 ### GENERATE ###
-@bot.command(name='generate', aliases=['speak'], description='Generates audio of the specified text in the specified voice')
+@bot.command(name='generate', aliases=['speak', 'ask'], description='Generates audio of the specified text in the specified voice')
 async def _generate(
     ctx, 
     request_voice: str = commands.parameter(default="spongebob", description="The voice to be used to generate audio"), 
@@ -113,25 +114,34 @@ async def _generate(
     debug_list = [f"Caller was {caller} from {caller_text_channel}", f"Trying to generate text with {request_voice}"]
     debug_list.append(f"Request text: {request_text}")
 
-    #Step 1: If the user is not in a voice channel, send them a message telling them so
+    # Step 1: If the user is not in a voice channel, send them a message telling them so
     if caller_voice_channel is None:
         await caller_text_channel.send(uwu(f"<@{caller}> you're not in a voice channel silly! I can't generate audio for you if you're not in a voice channel."))
 
-    #Step 2: Try and generate the audio file we are going to play
+    # Step 2: Try and generate the audio file we are going to play
     #TODO: Program behaviors based off exception type
     try:
+        # if the 'ask' alias is used, call out to GPT to generate a response
+        if ctx.invoked_with == 'ask':
+            gpt_character = voice_mappings[request_voice]["full-name"]
+            debug_list.append(f"Trying to use Chat GPT to generate audio with {gpt_character}")
+            gpt_response = generate_with_gpt(character_name=gpt_character, user_message=request_text)
+            request_text = gpt_response["text-response"]
+            debug_list.append(f"Full OpenAI API response: {gpt_response['full-response']}")
+
+        # generate and save the audio file
         output_dict = generate_and_save(input_text = request_text, request_voice = request_voice, requester=caller)
+        print(f"Saved audio to {output_dict['full-path']}")
         debug_list.append(output_dict['debug-string'])
-    except KeyError:
+    except KeyError as e:
         await caller_text_channel.send(uwu(f"Sorry! I couldn't generate your audio for you because {request_voice} is not a voice I know yet; use !list_voices to see which ones I know!"))
-        return
+        print(repr(e))
     except Exception as e:
         await caller_text_channel.send(uwu(f"Sorry! I couldn't generate the audio for you but I'm not sure why. Use the !debug command to turn on debug mode and get more details."))
         debug_list.append(f"Saving audio failed because of: {repr(e)}")
-        return 
 
-    #Step 3a: try and fetch the bots current connection status
-    #I think the get().is_connect() should tell us if the bot is connected to ANY voice channel in the given server
+    # Step 3a: try and fetch the bots current connection status
+    # I think the get().is_connect() should tell us if the bot is connected to ANY voice channel in the given server
     try:
         is_already_connected = get(ctx.bot.voice_clients, guild=ctx.guild).is_connected()
         debug_list.append(f"Connected status was {is_already_connected}")
@@ -193,18 +203,6 @@ async def _debug_mode(ctx):
     
     return None
 
-@bot.command(name='roadmap', aliases=['road_map', 'upcoming', 'whats_next', 'patchnotes', 'patch_notes', 'notes'], description='Provides a roadmap of upcoming features and voices')
-async def _roadmap(ctx):
-    
-    caller = ctx.message.author.id
-    caller_text_channel = ctx.message.channel
-    debug_list = [f"Caller was {caller} from {caller_text_channel}"]
-
-    await caller_text_channel.send(print_roadmap_str())
-
-    if DEBUG_MODE:
-        await debug_channel.send(debug_formatter(debug_list, "roadmap"))
-
 @bot.command(name='voice_help', aliases=['voicehelp','add_voice', 'addvoice', 'faq'], description='A command to given hints on how to make a voice and make better audio from the available voices')
 async def _voice_help(ctx):
 
@@ -216,16 +214,6 @@ async def _voice_help(ctx):
 
     if DEBUG_MODE:
         await debug_channel.send(debug_formatter(debug_list, "voice_help"))
-
-@bot.command(name='github', aliases=['git_hub', 'git', 'version_control', 'contribute'], description='Link to Github repo so folks can contribute if they want.')
-async def _github(ctx):
-    
-    caller = ctx.message.author.id
-    caller_text_channel = ctx.message.channel
-    await caller_text_channel.send("Want to contribute? Check out the [Github repo](https://github.com/Gasperino11/mimus-polyglottos)!")
-
-    if DEBUG_MODE:
-        await debug_channel.send(debug_formatter([f"Caller was {caller} from {caller_text_channel}"], "github"))
 
 @bot.command(name='usage', aliases=['used', 'characters_used', 'charactersused', 'characters'])
 async def _usage(ctx):
