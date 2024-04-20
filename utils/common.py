@@ -30,23 +30,6 @@ def uwu(error_str: str) -> str:
 
     return output_str
 
-def print_help_str() -> str:
-
-    help_str = "# AI Voice Bot Command Menu:\n"
-    help_str += "> **connect**\n"
-    help_str += "*Connects the bot to the voice channel of the message author*\n\n"
-    help_str += "> ** disconnect **\n"
-    help_str += "*Disconnects the bot from any voice channels it is connected to*\n\n"
-    help_str += "> ** generate <voice> <text to generate speech from>**\n"
-    help_str += "*Generates audio of the specified text in the specified voice; the text should be wrapped in double quotes*\n\n"
-    help_str += "> ** list_voices **\n"
-    help_str += "*Provides a list of voices with descriptions that can be used to generate audio*\n\n"
-    help_str += "> ** debug **\n"
-    help_str += "*Enables debug mode to print extra information on command execution out to the assigned debug channel*\n\n"
-    help_str += "Typing !help will provide a list of commands and typing !help <command name> will provide a list of aliases for that command\n"
-
-    return help_str
-
 def print_roadmap_str() -> str:
 
     roadmap_str = "# AI Voice Bot Roadmap\n"

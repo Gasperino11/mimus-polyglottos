@@ -1,3 +1,4 @@
 temp/
+voice_generator/voice_clips/
 test.py
 *.pyc
